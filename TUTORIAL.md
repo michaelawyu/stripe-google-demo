@@ -84,7 +84,10 @@ Click **Next** to continue.
 
 ## Try it out
 
-Run the command below to start an example to incorporates the payment process:
+First, open `example-app/static/stripe.js` in the file explorer. Replace
+`YOUR-API-KEY` with the value of your Stripe public API key.
+
+Run the command below to start the example app that incorporates the payment process:
 
 ```
 cd ~/stripe-google-demo
@@ -109,5 +112,5 @@ You have deployed the demo.
 
 The service also features integration with Google BigQuery and Google Data
 Studio to help you monitor, analyze, and visualize
-the workflow; to set it up, see <walkthrough-editor-open-file filepath="stripe-google-demo/data-analytics.md" text="Set up Google BigQuery and Google Data Studio"></walkthrough-editor-open-file>.
+the workflow; to set it up, see <walkthrough-editor-open-file filepath="stripe-google-demo/ANALYTICS.md" text="Set up Google BigQuery and Google Data Studio"></walkthrough-editor-open-file>.
 
