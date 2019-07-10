@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Example App: Checkout</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css">
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    </head>
+    <body>
+        <nav class="navbar has-background-dark">
+            <div class="navbar-menu">
+                <div class="navbar-start">
+                    <a class="navbar-item has-text-light" href="/">Stripe + Firebase/GCP Demo</a>
+                </div>
+            </div>
+        </nav>
+        <section class="hero is-bold">
+            <div class="hero-body">
+                <div class="container">
+                    <h2 class="subtitle">You are ordering</h2>
+                    <div class="container">
+                        <article class="media">
+                            <figure class="media-left">
+                                <p class="image is-128x128">
+                                    <img src="https://bulma.io/images/placeholders/128x128.png">
+                                </p>
+                            </figure>
+                            <div class="media-content">
+                                <div class="content">
+                                <p>
+                                    <strong>{{ product.name }}</strong>
+                                    <br>
+                                    Unit Price: {{ product.price }} 
+                                    <br>
+                                    Qty: {{ count }}
+                                    <h2 class="title has-text-weight-light">${{ total }}</h1>
+                                </p>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="hero is-dark is-bold">
+            <div class="hero-body">
+                <div class="container"><h2 class="subtitle">Shipping</h2></div>
+                <br>
+                <div class="container">
+                    <div class="columns">
+                        <div class="column is-4">
+                            <div class="field">
+                                <label class="label has-text-grey">Email</label>
+                                <p class="control has-icons-left">
+                                    <input id="emailInput" class="input has-background-dark has-text-light is-medium" type="email" style="border: none;">
+                                    <span class="icon is-small is-left"><i class="fas fa-envelope"></i></span>
+                                </p>
+                            </div>
+                        </div>    
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="hero is-bold">
+            <div class="hero-body">
+                <div class="container"><h2 class="subtitle">Payment</h2></div>
+                <br>
+                <div class="container">
+                    <label class="label">Credit/Debit Card Payment via Stripe</label>
+                    <br>
+                    <div class="columns">
+                        <div class="column">
+                            <div id="cardElement"></div>
+                            <br>
+                            <div id="cardErrors" class="label has-text-danger" role="alert" style="display: none;"></div>
+                            <script src="https://js.stripe.com/v3/"></script>
+                            <script src="/static/stripe.js"></script>
+                        </div>
+                        <div class="column is-one-fifth">
+                            <button id="stripePayButton" class="button is-fullwidth has-background-dark has-text-white" style="border: none;" onclick="stripePayButtonClicked()">Pay</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <form id="paymentForm" action="/charge" method="POST">
+            <input type="hidden" id="productId" name="productId" value="{{ product.id }}">
+            <input type="hidden" id="count" name="count" value="{{ count }}">
+            <input type="hidden" id="email" name="email" value="">
+        </form>
+    </body>
+</html>

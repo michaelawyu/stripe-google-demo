@@ -3,42 +3,8 @@ import json
 import random
 import uuid
 
-products = [
-    {
-        'id': 1,
-        'name': 'Example Product #1',
-        'price': 5
-    },
-    {
-        'id': 2,
-        'name': 'Example Product #2',
-        'price': 150
-    },
-    {
-        'id': 3,
-        'name': 'Example Product #3',
-        'price': 42
-    },
-    {
-        'id': 4,
-        'name': 'Example Product #4',
-        'price': 7
-    },
-    {
-        'id': 5,
-        'name': 'Example Product #5',
-        'price': 12
-    },
-    {
-        'id': 6,
-        'name': 'Example Product #6',
-        'price': 60
-    }
-]
-
-def prepare_incoming_payment_event(stripe_token):
-    product = products[random.randint(0, 5)]
-    count = random.randint(1, 10)
+def prepare_incoming_payment_event(product_id, count, stripe_token, products):
+    product = products[product_id - 1]
     return {
         'order': {
             'id': uuid.uuid4().hex,
