@@ -33,6 +33,15 @@ get your **test API keys**. Write down both the publishable key and the secret k
     **Add Project**, then follow the instructions on the screen to create
     a Firebase project.
 
+    Your Firebase project, by default, uses the Spark plan, which limits
+    outgoing network traffic. As a result, you may not be able to connect to
+    third-party APIs such as Stripe. To upgrade your plan, click the **Settings**
+    button on the left navigation menu in the Firebase console, and click
+    **Usage and Billing**. Switch to the **Details & Settings** tab, and
+    click **Modify plan**. Pick a plan other than Spark, such as the pay-as-you-go
+    Blaze plan. Your usage of this demo should be eligible for the Firebase/GCP
+    Free Tier regardless of the plan you choose.
+
 3. Enable Cloud Firestore.
 
     In the Firebase Console, select **Database** from the left navigation lane,
@@ -50,7 +59,7 @@ get your **test API keys**. Write down both the publishable key and the secret k
 6. Authenticate the Firebase CLI:
 
     ```
-    firebase login
+    firebase login --no-localhost
     ```
 
     Follow the instructions on the screen to continue.
@@ -69,8 +78,8 @@ Click **Next** to continue.
 
 1. Open `quickstart.sh` from the file explorer on the left side.
 
-2. Edit the first two lines of the file. Replace `YOUR-STRIPE-API-KEY` and
-`YOUR-SENDGRID-API-KEY` with values of your own.
+2. Edit the first two lines of the file. Replace `YOUR-STRIPE-API-KEY`,
+`YOUR-FIREBASE-PROJECT`and `YOUR-SENDGRID-API-KEY` with values of your own.
 
 3. Run the following command to deploy the functions:
 
@@ -90,17 +99,18 @@ First, open `example-app/static/stripe.js` in the file explorer. Replace
 Run the command below to start the example app that incorporates the payment process:
 
 ```
-cd ~/stripe-google-demo
-python main.py
+cd ~/stripe-google-demo/example-app
+pip3 install -r requirements.txt
+python3 main.py
 ```
 
 Click the Web Preview Buttion (<walkthrough-web-preview-icon></walkthrough-web-preview-icon>)
-on the top right of the screen to open the web app.
+on the top right of the screen, and click **Preview on Port 8080** to open the web app.
 
 You may use the VISA card `4242 4242 4242 4242` to make the purchase. Pick any
 future date as the expiration date, any 3-digit number as the CVC, and any
 5-digit number as the zip code. You should see a confirmation email in your
-inbox soon.
+inbox soon. The charge should also be visible in the Stripe dashboard.
 
 Click **Next** to continue.
 
@@ -112,5 +122,5 @@ You have deployed the demo.
 
 The service also features integration with Google BigQuery and Google Data
 Studio to help you monitor, analyze, and visualize
-the workflow; to set it up, see <walkthrough-editor-open-file filepath="stripe-google-demo/ANALYTICS.md" text="Set up Google BigQuery and Google Data Studio"></walkthrough-editor-open-file>.
+the workflow; to set it up, see <walkthrough-editor-open-file filepath="stripe-google-demo/analytics.md" text="Set up Google Data Studio"></walkthrough-editor-open-file>.
 
