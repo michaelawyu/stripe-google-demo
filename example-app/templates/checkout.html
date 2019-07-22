@@ -19,6 +19,7 @@
             <div class="hero-body">
                 <div class="container">
                     <h2 class="subtitle">You are ordering</h2>
+                    {% for product in order['products'] %}
                     <div class="container">
                         <article class="media">
                             <figure class="media-left">
@@ -29,17 +30,19 @@
                             <div class="media-content">
                                 <div class="content">
                                 <p>
-                                    <strong>{{ product.name }}</strong>
+                                    <strong>{{ product['name'] }}</strong>
                                     <br>
-                                    Unit Price: {{ product.price }} 
+                                    Unit Price: {{ product['price'] }} 
                                     <br>
-                                    Qty: {{ count }}
-                                    <h2 class="title has-text-weight-light">${{ total }}</h1>
+                                    Qty: {{ product['count'] }}
                                 </p>
                                 </div>
                             </div>
                         </article>
                     </div>
+                    {% endfor %}
+                    <br>
+                    <h2 class="subtitle">Total: ${{ order['amount'] / 100 }}</h1>
                 </div>
             </div>
         </section>
@@ -78,16 +81,11 @@
                             <script src="/static/stripe.js"></script>
                         </div>
                         <div class="column is-one-fifth">
-                            <button id="stripePayButton" class="button is-fullwidth has-background-dark has-text-white" style="border: none;" onclick="stripePayButtonClicked()">Pay</button>
+                            <button id="stripePayButton" data-secret="{{ client_secret }}" class="button is-fullwidth has-background-dark has-text-white" style="border: none;" onclick="stripePayButtonClicked()">Pay</button>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-        <form id="paymentForm" action="/charge" method="POST">
-            <input type="hidden" id="productId" name="productId" value="{{ product.id }}">
-            <input type="hidden" id="count" name="count" value="{{ count }}">
-            <input type="hidden" id="email" name="email" value="">
-        </form>
     </body>
 </html>

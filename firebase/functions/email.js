@@ -9,7 +9,7 @@ const utils = require('./utils');
 
 const EVENT_COLLECTION = 'processedPaymentEvents';
 const EVENT_MAX_AGE = 60000;
-const UPSTREAM_TOPIC = functions.config().pubsub.payment_downstream_topic;
+const UPSTREAM_TOPIC = functions.config().pubsub.fulfillment_downstream_topic;
 const DOWNSTREAM_TOPIC = functions.config().pubsub.email_downstream_topic;
 const DLQ = functions.config().pubsub.email_dlq;
 const SENDGRID_API_KEY = functions.config().sendgrid.api_key;
@@ -23,13 +23,13 @@ module.exports = functions.pubsub.topic(UPSTREAM_TOPIC).onPublish(async (message
   let eventTimestamp = context.timestamp;
   let eventTraceParent;
   let order;
-  let charge;
-  let chargeErr;
+  let paymentIntent;
+  let paymentIntentError;
   try {
     eventTraceParent = message.json.traceparent;
     order = message.json.order;
-    charge = message.json.charge;
-    chargeErr = message.json.chargeErr;
+    paymentIntent = message.json.paymentIntent;
+    paymentIntentError = message.json.paymentIntentError;
   } catch (err) {
     let errorMessage = `INVALID_MESSAGE_FORMAT: ${message.json}`;
     utils.handleError(errorMessage, pubSubClient, DLQ, message.json);
@@ -37,7 +37,7 @@ module.exports = functions.pubsub.topic(UPSTREAM_TOPIC).onPublish(async (message
   }
 
   try {
-    utils.checkForExpiredEvents(eventTimestamp, EVENT_MAX_AGE);
+    utils.checkForExpiredEvents('RFC3339', eventTimestamp, EVENT_MAX_AGE);
     await utils.guaranteeExactlyOnceDelivery(firestoreClient,
       EVENT_COLLECTION, eventId, eventTimestamp, message.json);
   } catch (err) {
@@ -46,7 +46,7 @@ module.exports = functions.pubsub.topic(UPSTREAM_TOPIC).onPublish(async (message
     return;
   }
 
-  let emailMessage = utils.prepareEmailMessage(order, charge, chargeErr);
+  let emailMessage = utils.prepareEmailMessage(order, paymentIntent, paymentIntentError);
   let sendMessageResponse;
   try {
     sendMessageResponse = await sendgrid.send(emailMessage);

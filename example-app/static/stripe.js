@@ -1,4 +1,4 @@
-var stripe = Stripe('YOUR-API-KEY');
+var stripe = Stripe('YOUR-API_KEY');
 var elements = stripe.elements();
 var style = {
   base: {
@@ -29,28 +29,24 @@ card.addEventListener('change', function (event) {
   }
 });
 
-function stripePayButtonClicked () {
-  stripe.createToken(card).then(function (result) {
-    if (result.error) {
-      let errorElement = document.getElementById('cardErrors');
-      errorElement.textContent = result.error.message;
-    } else {
-      stripeTokenHandler(result.token);
-    }
-  });
-}
-
-function stripeTokenHandler (token) {
+function stripePayButtonClicked() {
+  let stripePayButton = document.getElementById('stripePayButton');
+  let clientSecret = stripePayButton.dataset.secret;
   let email = document.getElementById('emailInput').value;
 
-  let paymentForm = document.getElementById('paymentForm');
-  let hiddenInput = document.createElement('input');
-  hiddenInput.setAttribute('type', 'hidden');
-  hiddenInput.setAttribute('name', 'stripeToken');
-  hiddenInput.setAttribute('value', token.id);
-  paymentForm.appendChild(hiddenInput);
-
-  document.getElementById('email').value = email;
-
-  paymentForm.submit();
+  let payment = stripe.handleCardPayment(clientSecret, card, {
+    payment_method_data: {
+      billing_details: {
+        email: email
+      }
+    },
+    receipt_email: email
+  });
+  payment.then(result => {
+    if (result.error) {
+      window.alert(`We are having trouble processing your payment at this momenmt. (${result.error})`);
+    } else {
+      window.location.href = '/paymentSucceeded';
+    }
+  });
 }

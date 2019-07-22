@@ -36,7 +36,7 @@ module.exports = functions.pubsub.topic(UPSTREAM_TOPIC).onPublish(async (message
 
   let idempotenceKey;
   try {
-    utils.checkForExpiredEvents(eventTimestamp, EVENT_MAX_AGE);
+    utils.checkForExpiredEvents('RFC3339', eventTimestamp, EVENT_MAX_AGE);
     idempotenceKey = await utils.guaranteeExactlyOnceDelivery(firestoreClient,
       EVENT_COLLECTION, eventId, eventTimestamp, message.json);
   } catch (err) {

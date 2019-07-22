@@ -1,4 +1,21 @@
+const stripe = require('stripe');
 const uuidv4 = require('uuid/v4');
+
+exports.extractStripeEvent = function (req, endpointSecret) {
+  let stripeSignature = req.headers['stripe-signature'];
+  let reqBody = req.rawBody;
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(reqBody, stripeSignature, endpointSecret);
+  } catch (err) {
+    let errorMessage = `FAILED_TO_CONSTRUCT_EVENT: ${err}`;
+    console.log(errorMessage);
+    throw Error(errorMessage);
+  }
+
+  return event;
+};
 
 async function publishEvent (pubSubClient, topic, event) {
   const data = Buffer.from(JSON.stringify(event));
@@ -7,8 +24,30 @@ async function publishEvent (pubSubClient, topic, event) {
 
 exports.publishEvent = publishEvent;
 
-exports.checkForExpiredEvents = function (eventTimestamp, maxAge) {
-  let age = Date.now() - Date.parse(eventTimestamp);
+exports.getOrder = async function (firestoreClient, orderId) {
+  let ref = firestoreClient.collection('orders').doc(orderId);
+  let order = await ref.get();
+  if (!order.exists) {
+    let errorMessage = `ORDER_NOT_FOUND: ${orderId}`;
+    console.log(errorMessage);
+    throw Error(errorMessage);
+  } else {
+    return order.data();
+  }
+};
+
+exports.checkForExpiredEvents = function (format, eventTimestamp, maxAge) {
+  let age;
+  switch (format) {
+    case 'RFC3339':
+      age = Date.now() - Date.parse(eventTimestamp);
+      break;
+    case 'POSIX':
+      age = Date.now() - eventTimestamp * 1000;
+      break;
+    default:
+      throw Error(`Timestamp format is invalid.`);
+  }
   if (age > maxAge) {
     throw Error(`Event has expired.`);
   }
@@ -34,24 +73,24 @@ exports.handleError = async function (message, pubSubClient, topic, event) {
   await publishEvent(pubSubClient, topic, event);
 };
 
-exports.preparePaymentProcessedEvent = function (eventTraceParent, order, charge, chargeErr) {
+exports.preparePaymentProcessedEvent = function (eventTraceParent, order, paymentIntent, paymentIntentError) {
   let paymentProcessedEvent = {
     traceparent: eventTraceParent,
     order: order,
-    charge: charge,
-    chargeErr: chargeErr
+    paymentIntent: paymentIntent,
+    paymentIntentError: paymentIntentError
   };
   return paymentProcessedEvent;
 };
 
-exports.prepareEmailMessage = function (order, charge, chargeErr) {
+exports.prepareEmailMessage = function (order, paymentIntent, paymentIntentError) {
   let message = {};
   message.from = 'no-reply@example.com';
-  message.to = order.email;
-  if (chargeErr && Object.keys(chargeErr) !== 0) {
-    message.subject = 'Your order cannot be processed';
-    if (chargeErr.type === 'StripeCardError') {
-      message.text = `We cannot process your order ${order.id} at this moment as your card is declined: ${chargeErr.message}`;
+  message.to = paymentIntent.receipt_email;
+  if (paymentIntentError && Object.keys(paymentIntentError).length !== 0) {
+    message.subject = 'We have a payment problem';
+    if (paymentIntentError.type === 'StripeCardError') {
+      message.text = `We cannot process your order ${order.id} at this moment as your card is declined: ${paymentIntentError.message}`;
     } else {
       message.text = `We cannot process your order ${order.id} at this moment. Please contact customer service.`;
     }
@@ -86,14 +125,14 @@ exports.extractSalesData = function (timestamp, order) {
   return salesData;
 };
 
-exports.extractPaymentData = function (timestamp, order, charge, chargeErr) {
+exports.extractPaymentData = function (timestamp, order, paymentIntent, paymentIntentError) {
   let paymentData = {
     orderId: order.id,
-    chargeId: charge.id,
+    paymentIntentId: paymentIntent.id,
     status: 'SUCCESS',
     timestamp: timestamp
   };
-  if (chargeErr && Object.keys(chargeErr) !== 0) {
+  if (paymentIntentError && Object.keys(paymentIntentError).length !== 0) {
     paymentData.status = 'FAILED';
   }
   return [paymentData];
@@ -105,7 +144,7 @@ exports.extractInvoiceData = function (timestamp, order, sendMessageResponse) {
     status: 'INVOICE NOT SENT',
     timestamp: timestamp
   };
-  if (sendMessageResponse && Object.keys(sendMessageResponse) !== 0) {
+  if (sendMessageResponse && Object.keys(sendMessageResponse).length !== 0) {
     invoiceData.status = 'INVOICE SENT';
   }
   return [invoiceData];

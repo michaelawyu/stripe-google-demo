@@ -1,1 +1,4 @@
 runtime: python37
+
+env_variables:
+  STRIPE_API_KEY: "YOUR-API-KEY"

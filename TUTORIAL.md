@@ -74,12 +74,35 @@ get your **test API keys**. Write down both the publishable key and the secret k
 
 Click **Next** to continue.
 
+## Set up Stripe Webhooks
+
+1. Open [Stripe Dashboard > Developers > Webhooks](https://dashboard.stripe.com/webhooks).
+
+2. Click **Add Endpoint**.
+
+    Type in `https://us-central1-[YOUR-FIREBASE-PROJECT].cloudfunctions.net/fulfillment`
+    as the the endpoint URL. Use the lastest API version, and add
+    `payment_intent.succeeded` as the event to send. Click **Add Endpoint**.
+
+3. In the endpoint details page, click **Click to Reveal** to reveal to the signing secret.
+Write down the secret. This is the secret for the fulfillment endpoint..
+
+4. Return to the Webhooks page. Repeat the steps above and add another endpoint.
+
+    Type in `https://us-central1-[YOUR-FIREBASE-PROJECT].cloudfunctions.net/cancellation`
+    as the the endpoint URL. Use the lastest API version, and add
+    `payment_intent.payment_failed` as the event to send. Click **Add Endpoint**.
+
+    Similarly, reveal the signing secret of the new endpoint. This is the
+    secret for the cancellation endpoint.
+
 ## Deploy the functions
 
 1. Open `quickstart.sh` from the file explorer on the left side.
 
 2. Edit the first two lines of the file. Replace `YOUR-STRIPE-API-KEY`,
-`YOUR-FIREBASE-PROJECT`and `YOUR-SENDGRID-API-KEY` with values of your own.
+`YOUR-FIREBASE-PROJECT`, `YOUR-SENDGRID-API-KEY`, `YOUR-FULFILLMENT-ENDPOINT-SECRET`
+and `YOUR-CANCELLATION-ENDPOINT-SECRET` with values of your own.
 
 3. Run the following command to deploy the functions:
 
@@ -94,7 +117,7 @@ Click **Next** to continue.
 ## Try it out
 
 First, open `example-app/static/stripe.js` in the file explorer. Replace
-`YOUR-API-KEY` with the value of your Stripe public API key.
+`YOUR-API-KEY` with the value of your Stripe **public** API key.
 
 Run the command below to start the example app that incorporates the payment process:
 
