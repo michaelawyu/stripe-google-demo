@@ -1,8 +1,7 @@
-// The Firebase function for processing fulfilled payment intents via Stripe.
+// The Cloud Function for processing successful payment intents via Stripe.
 'use strict';
 
-const admin = require('firebase-admin');
-const functions = require('firebase-functions');
+const Firestore = require('@google-cloud/firestore');
 const { PubSub } = require('@google-cloud/pubsub');
 const utils = require('./utils');
 
@@ -13,20 +12,20 @@ const utils = require('./utils');
 // ENDPOINT_SECRET: A secret for verifying Stripe webhook events.
 const EVENT_COLLECTION = 'fulfilledPaymentIntents';
 const EVENT_MAX_AGE = 60000;
-const DOWNSTREAM_TOPIC = functions.config().pubsub.fulfillment_downstream_topic;
-const DLQ = functions.config().pubsub.fulfillment_dlq;
-const ENDPOINT_SECRET = functions.config().stripe.fulfillment_endpoint_secret;
+const DOWNSTREAM_TOPIC = process.env.DOWNSTREAM_TOPIC;
+const DLQ = process.env.DLQ;
+const ENDPOINT_SECRET = process.env.ENDPOINT_SECRET;
 
 const SOURCE = 'functions/fulfillment';
 
-const firestoreClient = admin.firestore();
+const firestoreClient = new Firestore();
 const pubSubClient = new PubSub();
 
 // A dummy empty function for fulfilling orders.
 function fulfillOrder (order) {}
 
 // A wrapper for rejecting dead-lettered events.
-module.exports = functions.https.onRequest(async (req, res) => {
+module.exports = async function (req, res) {
   try {
     return await fulfill(req, res);
   } catch (err) {
@@ -36,9 +35,8 @@ module.exports = functions.https.onRequest(async (req, res) => {
     const stripeWebhookEventRejected = utils.createStripeWebhookEventRejectedEvent(SOURCE, req.headers, req.body, err.message);
     await utils.publishEvent(pubSubClient, DLQ, stripeWebhookEventRejected);
     res.status(400).end();
-    return Promise.resolve();
   }
-});
+};
 
 async function fulfill (req, res) {
   // Extracts the Stripe webhook event from the incoming HTTP request.

@@ -1,0 +1,4 @@
+runtime: python37
+
+env_variables:
+  STRIPE_API_KEY: "sk_test_juodA1R3AahFdaRoyBNCyBjQ"

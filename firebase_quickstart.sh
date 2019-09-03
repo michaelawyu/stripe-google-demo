@@ -26,15 +26,13 @@ firebase functions:config:set pubsub.fulfillment_downstream_topic=$PAYMENT_DOWNS
                               sendgrid.api_key=$SENDGRID_API_KEY \
                               --project $FIREBASE_PROJECT
 # Create the Pub/Sub topics
-gcloud pubsub topics create $PAYMENT_UPSTREAM_TOPIC
 gcloud pubsub topics create $PAYMENT_DOWNSTREAM_TOPIC
 gcloud pubsub topics create $EMAIL_DOWNSTREAM_TOPIC
-gcloud pubsub topics create $PAYMENT_DLQ
+gcloud pubsub topics create $FULFILLMENT_DLQ
+gcloud pubsub topics create $CANCELLATION_DLQ
 gcloud pubsub topics create $EMAIL_DLQ
 # Create the BigQuery dataset and tables
 bq --location=$BIGQUERY_DATASET_LOCATION --disable_ssl_validation mk --dataset $BIGQUERY_DATASET
-bq --disable_ssl_validation mk --table $BIGQUERY_DATASET.sales productId:STRING,productName:String,count:FLOAT,price:FLOAT,timestamp:TIMESTAMP
-bq --disable_ssl_validation mk --table $BIGQUERY_DATASET.payments orderId:STRING,paymentIntentId:STRING,status:STRING,timestamp:TIMESTAMP
-bq --disable_ssl_validation mk --table $BIGQUERY_DATASET.invoices orderId:STRING,status:STRING,timestamp:TIMESTAMP
+bq --disable_ssl_validation mk --table $BIGQUERY_DATASET.orders orderId:STRING,timestamp:TIMESTAMP,status:STRING
 # Deploy the Firebase functions
 cd firebase/functions && npm install && firebase deploy --only functions --project $FIREBASE_PROJECT

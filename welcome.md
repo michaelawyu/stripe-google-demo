@@ -6,5 +6,6 @@ If the interactive tutorial does not open, run command
 
 ```
 cd ~/stripe-gcp-demo
-teachme tutorial.md
+teachme firebase_tutorial.md # For Firebase developers
+teachme gcp_tutorial.md # For GCP developers
 ```

@@ -1,8 +1,7 @@
-// The Firebase function for delivering receipts via SendGrid.
+// The Cloud Function for delivering confirmation emails via SendGrid.
 'use strict';
 
-const admin = require('firebase-admin');
-const functions = require('firebase-functions');
+const Firestore = require('@google-cloud/firestore');
 const { PubSub } = require('@google-cloud/pubsub');
 const sendgrid = require('@sendgrid/mail');
 const utils = require('./utils');
@@ -15,35 +14,36 @@ const exampleEvents = require('example_events');
 // ENDPOINT_SECRET: A secret for verifying Stripe webhook events.
 const EVENT_COLLECTION = 'processedPaymentEvents';
 const EVENT_MAX_AGE = 60000;
-const UPSTREAM_TOPIC = functions.config().pubsub.fulfillment_downstream_topic;
-const DOWNSTREAM_TOPIC = functions.config().pubsub.email_downstream_topic;
-const DLQ = functions.config().pubsub.email_dlq;
-const SENDGRID_API_KEY = functions.config().sendgrid.api_key;
+const DOWNSTREAM_TOPIC = process.env.DOWNSTREAM_TOPIC;
+const DLQ = process.env.DLQ;
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 
-const firestoreClient = admin.firestore();
+const firestoreClient = new Firestore();
 const pubSubClient = new PubSub();
 sendgrid.setApiKey(SENDGRID_API_KEY);
 
 // A wrapper for rejecting dead-lettered events.
-module.exports = functions.pubsub.topic(UPSTREAM_TOPIC).onPublish(async (message, context) => {
+module.exports = async function (pubSubEvent, context) {
   try {
-    return await sendEmail(message, context);
+    return await sendEmail(pubSubEvent, context);
   } catch (err) {
     console.log(err.message);
     // Stripe webhook events are delivered via HTTP. Here it is wrapped in
     // a Cloud Event and rejected to DLQ via Cloud Pub/Sub.
-    const orderProcessed = exampleEvents.OrderProcessed.Event.fromJSON(message.json);
+    const data = Buffer.from(pubSubEvent.data, 'base64').toString();
+    const orderProcessed = exampleEvents.OrderProcessed.Event.fromJSON(data);
     await utils.publishEvent(pubSubClient, DLQ, orderProcessed);
   }
-});
+};
 
-async function sendEmail (message, context) {
-  const orderProcessed = exampleEvents.OrderProcessed.Event.fromJSON(message.json);
+async function sendEmail (pubSubEvent, context) {
+  const data = Buffer.from(pubSubEvent.data, 'base64').toString();
+  const orderProcessed = exampleEvents.OrderProcessed.Event.fromJSON(data);
 
   // Rejects stale events.
   utils.checkForExpiredEvents('RFC3339', orderProcessed.time, EVENT_MAX_AGE);
   // Checks if the event is duplicated.
-  await utils.guaranteeExactlyOnceDelivery(firestoreClient, EVENT_COLLECTION, orderProcessed.id, JSON.stringify(message.json));
+  await utils.guaranteeExactlyOnceDelivery(firestoreClient, EVENT_COLLECTION, orderProcessed.id, data);
 
   const orderId = orderProcessed.data.orderId;
   const email = orderProcessed.data.email;

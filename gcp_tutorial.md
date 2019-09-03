@@ -11,8 +11,8 @@ auto retry, and data analytics integration**.
 It uses the following products and services:
 
 * [Stripe](https://stripe.com/)
-* [Firebase Functions (Cloud Functions for Firebase)](https://firebase.google.com/docs/functions)
-* [Cloud Firestore](https://firebase.google.com/docs/firestore/)
+* [Cloud Functions](https://cloud.google.com/functions)
+* [Cloud Firestore](https://cloud.google.com/firestore)
 * [Cloud Pub/Sub](https://cloud.google.com/pubsub)
 * [Google BigQuery](https://cloud.google.com/bigquery)
 * [Google Data Studio](https://datastudio.google.com/)
@@ -29,42 +29,23 @@ get your **test API keys**. Write down both the publishable key and the secret k
 
 2. Create a new Firebase project.
 
-    Open the [Firebase Console](https://console.firebase.google.com/). Click
-    **Add Project**, then follow the instructions on the screen to create
-    a Firebase project.
-
-    Your Firebase project, by default, uses the Spark plan, which limits
-    outgoing network traffic. As a result, you may not be able to connect to
-    third-party APIs such as Stripe. To upgrade your plan, click the **Settings**
-    button on the left navigation menu in the Firebase console, and click
-    **Usage and Billing**. Switch to the **Details & Settings** tab, and
-    click **Modify plan**. Pick a plan other than Spark, such as the pay-as-you-go
-    Blaze plan. Your usage of this demo should be eligible for the Firebase/GCP
-    Free Tier regardless of the plan you choose.
+    Open the [Google Cloud Console](https://console.cloud.google.com/). Create
+    a new Google Cloud Platform project.
 
 3. Enable Cloud Firestore.
 
-    In the Firebase Console, select **Database** from the left navigation lane,
-    the click **Create Database**. Choose a mode and a location for your
-    database. It is recommended that you use **Locked Mode** and **us-central**
-    for this tutorial. Click **Done**.
+    In the Cloud Console, select **Firestore** from the left navigation lane.
+    Use **Cloud Firestore in Native mode** and **us-central** for this
+    tutorial. Click **Create Database**.
 
 4. [Enable the APIs](https://pantheon.corp.google.com/flows/enableapi?apiid=pubsub,bigquery).
 
     Cloud Console will ask for your project ID. Choose the same one as
-    your Firebase project created earlier in the list.
+    your Google Cloud Platform project created earlier in the list.
 
 5. [Set up SendGrid](https://sendgrid.com).
 
-6. Authenticate the Firebase CLI:
-
-    ```
-    firebase login --no-localhost
-    ```
-
-    Follow the instructions on the screen to continue.
-
-7. Authenticate Cloud SDK:
+6. Authenticate Cloud SDK:
 
     ```
     gcloud config set project YOUR-PROJECT-ID
@@ -101,13 +82,13 @@ Write down the secret. This is the secret for the fulfillment endpoint..
 1. Open `quickstart.sh` from the file explorer on the left side.
 
 2. Edit the first two lines of the file. Replace `YOUR-STRIPE-API-KEY`,
-`YOUR-FIREBASE-PROJECT`, `YOUR-SENDGRID-API-KEY`, `YOUR-FULFILLMENT-ENDPOINT-SECRET`
+`YOUR-SENDGRID-API-KEY`, `YOUR-FULFILLMENT-ENDPOINT-SECRET`
 and `YOUR-CANCELLATION-ENDPOINT-SECRET` with values of your own.
 
 3. Run the following command to deploy the functions:
 
     ```
-    ./quickstart.sh
+    ./gcp_quickstart.sh
     ```
 
     It may take a few minutes to complete the operations.
@@ -116,7 +97,7 @@ Click **Next** to continue.
 
 ## Try it out
 
-First, open `example-app/static/stripe.js` in the file explorer. Replace
+First, open `app/static/stripe.js` in the file explorer. Replace
 `YOUR-API-KEY` with the value of your Stripe **public** API key.
 
 Run the command below to start the example app that incorporates the payment process:
@@ -142,8 +123,3 @@ Click **Next** to continue.
 <walkthrough-conclusion-trophy></walkthrough-conclusion-trophy>
 
 You have deployed the demo.
-
-The service also features integration with Google BigQuery and Google Data
-Studio to help you monitor, analyze, and visualize
-the workflow; to set it up, see <walkthrough-editor-open-file filepath="stripe-google-demo/analytics.md" text="Set up Google Data Studio"></walkthrough-editor-open-file>.
-

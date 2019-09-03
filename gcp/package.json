@@ -1,0 +1,19 @@
+{
+  "name": "stripe-demo-functions",
+  "description": "This is the Firebase functions for the Stripe + Firebase/GCP demo",
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "engines": {
+    "node": "8"
+  },
+  "dependencies": {
+    "@google-cloud/bigquery": "^4.1.4",
+    "@google-cloud/firestore": "^2.2.3",
+    "@google-cloud/pubsub": "^0.30.1",
+    "@opencensus/nodejs": "0.0.16",
+    "@sendgrid/mail": "^6.4.0",
+    "example_events": "file:example_events",
+    "stripe": "^7.4.0"
+  }
+}

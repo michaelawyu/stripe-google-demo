@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask, render_template, request
-from google.cloud import pubsub_v1
 import random
 
 from products import products

@@ -1,0 +1,121 @@
+events:
+  # A event type for rejected Stripe webhook events
+  stripeWebhookEventRejected:
+    attributes:
+      id:
+        type: string
+        format: UUIDv4
+        auto: true
+      specversion:
+        type: string
+        default: "0.3"
+        enum:
+          - "0.3"
+      type:
+        type: string
+        default: "example.stripewebhook.rejected"
+        enum:
+          - "example.stripewebhook.rejected"
+      source:
+        type: string
+        enum:
+          - "functions/fulfillment"
+          - "functions/cancellation"
+      time:
+        type: string
+        format: RFC3339
+        auto: true
+      data:
+        type: object
+        properties:
+          header:
+            type: string
+            description: the header of the webhook event
+          body:
+            type: string
+            description: the body of the webhook event
+          errMessage:
+            type: string
+            description: returned error message
+  # A event type for processed orders
+  orderProcessed:
+    attributes:
+      id:
+        type: string
+        format: UUIDv4
+        auto: true
+      specversion:
+        type: string
+        default: "0.3"
+        enum:
+          - "0.3"
+      type:
+        type: string
+        default: "example.order.processed"
+        enum:
+          - "example.order.processed"
+      source:
+        type: string
+        enum:
+          - "functions/fulfillment"
+          - "functions/cancellation"
+      time:
+        type: string
+        format: RFC3339
+        auto: true
+      data:
+        type: object
+        properties:
+          orderId:
+            type: string
+            description: order id
+          email:
+            type: string
+            description: email address
+          paymentErrType:
+            type: string
+            description: error type of failed payment
+            enum:
+              - INTERNAL
+              - CARD_ERROR
+              - NONE
+          paymentErrMessage:
+            type: string
+            description: error message of failed payment
+  # A event type for sent emails
+  emailSent:
+    attributes:
+      id:
+        type: string
+        format: UUIDv4
+        auto: true
+      specversion:
+        type: string
+        default: "0.3"
+        enum:
+          - "0.3"
+      type:
+        type: string
+        default: "example.email.sent"
+        enum:
+          - "example.email.sent"
+      source:
+        type: string
+        default: "functions/email"
+        enum:
+          - "functions/email"
+      time:
+        type: string
+        format: RFC3339
+        auto: true
+      data:
+        type: object
+        properties:
+          orderId:
+            type: string
+            description: order id
+          email:
+            type: string
+            description: email address
+metadata:
+  packageName: example_events
