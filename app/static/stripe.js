@@ -1,4 +1,4 @@
-var stripe = Stripe('pk_test_JQE7K0FgPKo8dTgVk2quzxWB');
+var stripe = Stripe('YOUR-API-KEY');
 var elements = stripe.elements();
 var style = {
   base: {

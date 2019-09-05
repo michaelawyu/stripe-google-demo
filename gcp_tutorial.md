@@ -81,7 +81,7 @@ Write down the secret. This is the secret for the fulfillment endpoint.
 
 ## Deploy the functions
 
-1. Open `quickstart.sh` from the file explorer on the left side.
+1. Open `gcp_quickstart.sh` from the file explorer on the left side.
 
 2. Edit the first two lines of the file. Replace `YOUR-STRIPE-API-KEY`,
 `YOUR-SENDGRID-API-KEY`, `YOUR-FULFILLMENT-ENDPOINT-SECRET`
@@ -90,6 +90,7 @@ and `YOUR-CANCELLATION-ENDPOINT-SECRET` with values of your own.
 3. Run the following command to deploy the functions:
 
     ```
+    chmod +x gcp_quickstart.sh
     ./gcp_quickstart.sh
     ```
 
@@ -105,8 +106,8 @@ First, open `app/static/stripe.js` in the file explorer. Replace
 Run the command below to start the example app that incorporates the payment process:
 
 ```
-cd ~/stripe-google-demo/example-app
-pip3 install -r requirements.txt
+cd ~/stripe-google-demo/app
+pip3 install -r requirements.txt --user
 python3 main.py
 ```
 

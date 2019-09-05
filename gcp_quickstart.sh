@@ -23,7 +23,7 @@ bq --location=$BIGQUERY_DATASET_LOCATION --disable_ssl_validation mk --dataset $
 bq --disable_ssl_validation mk --table $BIGQUERY_DATASET.orders orderId:STRING,timestamp:TIMESTAMP,status:STRING
 # Deploy the Cloud Functions
 cd gcp
-gcloud functions deploy fulfillment --runtime nodejs8 --trigger-http --set-env-vars=DOWNSTREAM_TOPIC=$FULFILLMENT_DOWNSTREAM_TOPIC,DLQ=$FULFILLMENT_DLQ,ENDPOINT_SECRET=$STRIPE_FULFILLMENT_ENDPOINT_SECRET
-gcloud functions deploy cancellation --runtime nodejs8 --trigger-http --set-env-vars=DOWNSTREAM_TOPIC=$CANCELLATION_DOWNSTREAM_TOPIC,DLQ=$CANCELLATION_DLQ,ENDPOINT_SECRET=$STRIPE_CANCELLATION_ENDPOINT_SECRET
-gcloud functions deploy email --runtime nodejs8 --trigger-topic=$FULFILLMENT_DOWNSTREAM_TOPIC --set-env-vars=DOWNSTREAM_TOPIC=$EMAIL_DOWNSTREAM_TOPIC,DLQ=$EMAIL_DLQ,SENDGRID_API_KEY=$SENDGRID_API_KEY
-gcloud functions deploy stats --runtime nodejs8 --trigger-topic=$FULFILLMENT_DOWNSTREAM_TOPIC --set-env-vars=BIGQUERY_DATASET=$BIGQUERY_DATASET
+gcloud beta functions deploy fulfillment --runtime nodejs8 --trigger-http --set-env-vars=DOWNSTREAM_TOPIC=$FULFILLMENT_DOWNSTREAM_TOPIC,DLQ=$FULFILLMENT_DLQ,ENDPOINT_SECRET=$STRIPE_FULFILLMENT_ENDPOINT_SECRET
+gcloud beta functions deploy cancellation --runtime nodejs8 --trigger-http --set-env-vars=DOWNSTREAM_TOPIC=$CANCELLATION_DOWNSTREAM_TOPIC,DLQ=$CANCELLATION_DLQ,ENDPOINT_SECRET=$STRIPE_CANCELLATION_ENDPOINT_SECRET
+gcloud beta functions deploy email --runtime nodejs8 --trigger-topic=$FULFILLMENT_DOWNSTREAM_TOPIC --set-env-vars=DOWNSTREAM_TOPIC=$EMAIL_DOWNSTREAM_TOPIC,DLQ=$EMAIL_DLQ,SENDGRID_API_KEY=$SENDGRID_API_KEY
+gcloud beta functions deploy stats --runtime nodejs8 --trigger-topic=$FULFILLMENT_DOWNSTREAM_TOPIC --set-env-vars=BIGQUERY_DATASET=$BIGQUERY_DATASET
