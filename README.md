@@ -19,6 +19,7 @@ If you are a GCP developer, click here to start:
 
 Alternatively, you may also set everything up locally with the steps below:
 
+1. [Set up your Python development environment](https://cloud.google.com/python/setup) (for running the example app).
 1. Set up [Google Cloud SDK](https://cloud.google.com/sdk/) or
 [Firebase Coomand-Line Tool](https://github.com/firebase/firebase-tools).
 2. Follow the steps here to continue ([Firebase](firebase_tutorial.md)

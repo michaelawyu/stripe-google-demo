@@ -81,16 +81,18 @@ Click **Next** to continue.
 2. Click **Add Endpoint**.
 
     Type in `https://us-central1-[YOUR-FIREBASE-PROJECT].cloudfunctions.net/fulfillment`
-    as the the endpoint URL. Use the lastest API version, and add
+    as the the endpoint URL. Replace `[YOUR-FIREBASE-PROJECT]` with the ID of your
+    Firebase project. Use the lastest API version, and add
     `payment_intent.succeeded` as the event to send. Click **Add Endpoint**.
 
 3. In the endpoint details page, click **Click to Reveal** to reveal to the signing secret.
-Write down the secret. This is the secret for the fulfillment endpoint..
+Write down the secret. This is the secret for the fulfillment endpoint.
 
 4. Return to the Webhooks page. Repeat the steps above and add another endpoint.
 
     Type in `https://us-central1-[YOUR-FIREBASE-PROJECT].cloudfunctions.net/cancellation`
-    as the the endpoint URL. Use the lastest API version, and add
+    as the the endpoint URL. Replace `[YOUR-FIREBASE-PROJECT]` with the ID of your
+    Firebase project. Use the lastest API version, and add
     `payment_intent.payment_failed` as the event to send. Click **Add Endpoint**.
 
     Similarly, reveal the signing secret of the new endpoint. This is the
@@ -127,8 +129,9 @@ pip3 install -r requirements.txt
 python3 main.py
 ```
 
-Click the Web Preview Buttion (<walkthrough-web-preview-icon></walkthrough-web-preview-icon>)
-on the top right of the screen, and click **Preview on Port 8080** to open the web app.
+If you are running this tutorial in Cloud Shell, click the Web Preview Buttion (<walkthrough-web-preview-icon></walkthrough-web-preview-icon>)
+on the top right of the screen, then click **Preview on Port 8080** to open
+the web app. Otherwise, open your browser and go to `localhost:8080`.
 
 You may use the VISA card `4242 4242 4242 4242` to make the purchase. Pick any
 future date as the expiration date, any 3-digit number as the CVC, and any
